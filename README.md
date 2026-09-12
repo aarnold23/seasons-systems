@@ -1,6 +1,6 @@
 # Seasons Systems
 
-A comprehensive agribusiness management platform designed to streamline and digitize agricultural enterprise operations. Features modular management for HR, Procurement, Equipment & Inventory, Sales, and Field Management, with role-based access, analytics, AI-powered planning, and in-app communication.
+A comprehensive agribusiness management platform designed to streamline and digitize agricultural enterprise operations. Features modular management for HR, Procurement, Equipment & Inventory, Sales, and Field Management, with role-based access, analytics, AI-powered planning, and in-app communication..
 
 ## 🚀 Features
 
