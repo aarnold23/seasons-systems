@@ -1,18 +1,24 @@
-export default function(allowedRoles) {
+import AppError from '../utils/AppError.js';
+
+export default function authorize(allowedRoles = [], options = {}) {
+
+
+
   return function(req, res, next) {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return next(new AppError(401, 'UNAUTHORIZED', 'Authentication required'));
+    }
+    
+    const allowAll = options.allowAll?.includes(req.user.role);
+    const roleAllowed = allowedRoles.includes(req.user.role);
+
+
+
+    if(!allowAll && !roleAllowed) {
+      return next(new AppError(403, 'FORBIDDEN', 'Insufficient permissions'));
     }
 
-    // If the user is a superAdmin, grant access regardless of allowedRoles
-    if (req.user.role === 'superAdmin') {
-      return next();
-    }
 
-    if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Forbidden: insufficient role' });
-    }
-
-    next();
+    return next();
   };
 };

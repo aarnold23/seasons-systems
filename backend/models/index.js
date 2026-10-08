@@ -3,6 +3,7 @@ import path from 'path';
 import Sequelize from 'sequelize';
 import configs from '../configs/configs.js';
 import { fileURLToPath, pathToFileURL } from 'url';
+import associateCrop from '../associations/cropAssociations.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,6 +41,8 @@ async function initializeModels() {
       db[modelName].associate(db);
     }
   });
+
+  associateCrop(db);
 
   db.sequelize = sequelize;
   db.Sequelize = Sequelize;

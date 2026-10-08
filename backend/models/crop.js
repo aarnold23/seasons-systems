@@ -1,3 +1,4 @@
+
 export default (sequelize, DataTypes) => {
   const Crop = sequelize.define('Crop', {
     cropID: {
@@ -52,12 +53,7 @@ export default (sequelize, DataTypes) => {
     timestamps: true,
   });
 
-  Crop.associate = function(models) {
-    // Crop belongsTo Field
-    Crop.belongsTo(models.Field, { foreignKey: 'fieldID', as: 'field' });
-    // Crop hasMany Inventory
-    Crop.hasMany(models.Inventory, { foreignKey: 'cropID', as: 'inventoryItems' });
-  };
+ 
 
   return Crop;
 };
