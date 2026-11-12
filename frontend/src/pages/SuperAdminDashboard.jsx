@@ -4,7 +4,7 @@ import { getAllUsers, createUser, updateUser, deleteUser, getAggregatedAnalytics
 import FormModal from '../components/FormModal';
 import EmployeeForm from '../components/EmployeeForm'; // Reusing EmployeeForm for user management
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import AnalyticsDashboard from '../components/AnalyticsDashboard';
+// CHANGE 1: removed the unused AnalyticsDashboard import
 
 const SuperAdminDashboard = () => {
   const { user } = useAuth();
@@ -129,7 +129,8 @@ const SuperAdminDashboard = () => {
 
       <h3 className="text-xl font-bold text-gray-900 mt-8 mb-4">Aggregated Analytics</h3>
       {loadingAnalytics && <p>Loading analytics data...</p>}
-      {errorAnalytics && <p className="text-red-500">Error loading analytics: {errorAnalytics.message}</p>}
+      {/* CHANGE 2: errorAnalytics is a string, so render it directly (was errorAnalytics.message) */}
+      {errorAnalytics && <p className="text-red-500">Error loading analytics: {errorAnalytics}</p>}
       {!loadingAnalytics && !errorAnalytics && analyticsData && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-lg shadow">
@@ -360,7 +361,15 @@ const SuperAdminDashboard = () => {
       )}
 
       <FormModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingUser ? 'Edit User' : 'Add New User'}>
-        <EmployeeForm employee={editingUser} onSuccess={handleFormSuccess} onClose={() => setIsModalOpen(false)} />
+        {/* CHANGE 3 (Question 4 fix): the caller supplies the save actions,
+            so the form no longer depends on the employee API. */}
+        <EmployeeForm
+          employee={editingUser}
+          onSuccess={handleFormSuccess}
+          onClose={() => setIsModalOpen(false)}
+          createAction={createUser}
+          updateAction={updateUser}
+        />
       </FormModal>
     </div>
   );
