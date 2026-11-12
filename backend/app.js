@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import routes from './routes/index.js';
+import errorHandler from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,8 +20,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// API routes
-import routes from './routes/index.js';
 app.use('/api', routes);
+
+app.use(errorHandler);
 
 export default app;
