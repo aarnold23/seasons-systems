@@ -8,8 +8,21 @@ import {
   validateUpdateEmployee
 } from '../validators/employeeValidator.js';
 
-const router = Router();
+export const createAccountRoutes = ({ controller, guards = [] }) => {
+	const router = Router();
+	router.use(...guards);
+	router.get('/', controller.getAll);
+	router.get('/:id', controller.getById);
+	router.post('/', controller.create);
+	router.put('/:id', controller.update);
+	router.delete('/:id', controller.remove);
+	return router;
+};
 
+const router = createAccountRoutes({
+	controller: employeeController,
+	guards: [auth, department('HR'), role(['admin'])],
+});
 // departments: HR
 router.get(
     '/',
