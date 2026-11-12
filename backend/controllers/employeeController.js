@@ -1,91 +1,51 @@
-import dbPromise from '../models/index.js';
-import logger from '../utils/logger.js';
-import bcrypt from 'bcrypt';
-import configs from '../configs/configs.js';
+import { employeeService } from '../container.js';
 
-const db = await dbPromise;
-const { Employee } = db;
+function withoutPassword(employee) {
+  const { password, ...safeEmployee } = employee.toJSON();
+  return safeEmployee;
+}
 
-export const getAll = async (req, res) => {
+export const getAll = async (req, res, next) => {
   try {
-    const employees = await Employee.findAll();
-    res.json(employees);
-    logger.info('All employees retrieved successfully');
+    const employees = await employeeService.getAll();
+    return res.json(employees);
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    logger.error(error.message);
+    return next(error);
   }
 };
 
-export const getById = async (req, res) => {
+export const getById = async (req, res, next) => {
   try {
-    const employee = await Employee.findByPk(req.params.id);
-    if (employee) {
-      res.json(employee);
-      logger.info(`Employee with id ${req.params.id} retrieved successfully`);
-    } else {
-      res.status(404).json({ error: 'Employee not found' });
-      logger.error(`Employee with id ${req.params.id} not found`);
-    }
+    const employee = await employeeService.getById(req.params.id);
+    return res.json(employee);
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    logger.error(error.message);
+    return next(error);
   }
 };
 
-export const create = async (req, res) => {
+export const create = async (req, res, next) => {
   try {
-    const { password, ...employeeData } = req.body;
-    
-    // Hash the password if provided
-    if (password) {
-      const hashedPassword = await bcrypt.hash(password, configs.auth.bcryptSaltRounds);
-      employeeData.password = hashedPassword;
-    }
-    
-    const employee = await Employee.create(employeeData);
-    
-    // Remove password from response for security
-    const { password: _, ...employeeResponse } = employee.toJSON();
-    
-    res.status(201).json(employeeResponse);
-    logger.info('Employee created successfully');
+    const employee = await employeeService.create(req.body);
+    return res.status(201).json(withoutPassword(employee));
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    logger.error(error.message);
+    return next(error);
   }
 };
 
-export const update = async (req, res) => {
+export const update = async (req, res, next) => {
   try {
-    const employee = await Employee.findByPk(req.params.id);
-    if (employee) {
-      await employee.update(req.body);
-      res.json(employee);
-      logger.info(`Employee with id ${req.params.id} updated successfully`);
-    } else {
-      res.status(404).json({ error: 'Employee not found' });
-      logger.error(`Employee with id ${req.params.id} not found`);
-    }
+    const employee = await employeeService.update(req.params.id, req.body);
+    return res.json(withoutPassword(employee));
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    logger.error(error.message);
+    return next(error);
   }
 };
 
-export const remove = async (req, res) => {
+export const remove = async (req, res, next) => {
   try {
-    const employee = await Employee.findByPk(req.params.id);
-    if (employee) {
-      await employee.destroy();
-      res.status(204).send();
-      logger.info(`Employee with id ${req.params.id} deleted successfully`);
-    } else {
-      res.status(404).json({ error: 'Employee not found' });
-      logger.error(`Employee with id ${req.params.id} not found`);
-    }
+    await employeeService.remove(req.params.id);
+    return res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    logger.error(error.message);
+    return next(error);
   }
 };
